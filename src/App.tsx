@@ -4,6 +4,8 @@ import {
   NavLink,
   BrowserRouter
 } from "react-router-dom";
+import { observer, inject } from "mobx-react"
+import rootStore from './store/RootStore';
 import Container from '@material-ui/core/Container';
 import Login from "./pages/Login";
 import Registration from "./pages/Registration";
@@ -17,13 +19,8 @@ type AppProps = {
     framework: string;
 }
 
-class App extends Component<Props> {
-  constructor(props: Props) {
-    super(props)
-  }
-
-  render() {
-    return (
+const App = inject("rootStore")(
+    observer(({ rootStore }) => (
       <BrowserRouter>
         <Container maxWidth="sm" >
           <h1>Parrot Wings</h1>
@@ -42,8 +39,7 @@ class App extends Component<Props> {
           </div>
         </Container>
       </BrowserRouter>
-    );
-  }
-}
+    ))
+)
 
 export default App;

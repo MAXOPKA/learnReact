@@ -1,8 +1,7 @@
 type UserInfo = {
   id: number;
-  date: string;
-  username: string;
-  amount: number;
+  name: string;
+  email: string;
   balance: number;
 }
 
