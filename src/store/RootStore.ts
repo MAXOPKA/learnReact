@@ -1,32 +1,31 @@
+import { types } from "mobx-state-tree";
 import CreateTransactionStore from './CreateTransactionStore';
 import LoginStore from './LoginStore';
 import RegistrationStore from './RegistrationStore';
 import TransactionsStore from './TransactionsStore';
+import UserInfoStore from './UserInfoStore';
+import GetUsersStore from './GetUsersStore';
 
-const rootStore = types
-    .model("rootStore", {
-      createTransactionStore: types.optional(CreateTransactionStore, {
-        name: "",
-        amount: 0,
-        isLoading: false
-      })
+const RootStore = types
+  .model("rootStore", {
+    loginStore: types.optional(LoginStore, {
+      isLoading: false
+    }),
+    registrationStore: types.optional(RegistrationStore, {
+      isLoading: false
+    }),
+    transactionsStore: types.optional(TransactionsStore, {
+      isLoading: false
+    }),
+    createTransactionStore: types.optional(CreateTransactionStore, {
+      isLoading: false
+    }),
+    getUsersStore: types.optional(GetUsersStore, {
+      isLoading: false
+    }),
+    userInfoStore: types.optional(UserInfoStore, {
+      isLoading: false
     })
-    .actions(self => ({
-        login(email, password) {
+  })
 
-        },
-        registration(name, email, password) {
-
-        },
-        getTransactions() {
-
-        },
-        createTransaction(name, amount) {
-
-        },
-        userInfo() {
-
-        },
-    }))
-
-export default rootStore;
+export default RootStore;

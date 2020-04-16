@@ -1,38 +1,41 @@
 import React, { Component } from 'react';
+import { observer, inject } from "mobx-react";
 import { Box, List } from '@material-ui/core';
 import TransactionsItem from '../components/TransactionsItem';
+import TransactionType from '../types/TransactionType';
+import Loader from '../components/Loader';
 
-let data = [
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 },
-  { id: 12331, date: "date", username: "Username", amount: 1.23, balance: 476.77 }
-];
+interface TransactionsProps {
+  rootStore: any;
+  transactionsStore: any;
+}
 
-class Transactions extends Component {
-  constructor(props: any) {
-      super(props)
+@inject("rootStore")
+@observer
+class Transactions extends Component<TransactionsProps> {
+  componentDidMount() {
+    this.props.rootStore.transactionsStore.getTransactions()
   }
 
+  renderTransactionsList = (transactions: TransactionType[]) => (
+    <List component="nav">
+      { transactions.map((transaction: TransactionType) => <TransactionsItem { ...{ transaction: transaction } } />) }
+    </List>
+  );
+
+  renderEmptyTransactionsMessage = () => (
+    <h3>No transactions</h3>
+  );
+
   render() {
+    const { isLoading, transactions } = this.props.rootStore.transactionsStore;
+
     return(
       <Box>
-        <h2>Create Transaction</h2>
-        <List component="nav">
-          { data.map(transaction => <TransactionsItem { ...{ transaction: transaction } } />) }
-        </List>
+        <h2>Transactions</h2>
+        {(!isLoading && transactions.length === 0) && this.renderEmptyTransactionsMessage() }
+        {(!isLoading && transactions.length !== 0) && this.renderTransactionsList(transactions) }
+        <Loader isOpen={isLoading} />
       </Box>
     );
   }

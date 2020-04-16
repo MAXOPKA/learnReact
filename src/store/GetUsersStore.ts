@@ -1,38 +1,36 @@
 import { runInAction } from "mobx";
 import { types } from "mobx-state-tree";
 import UsersAPIService from "../services/api/Users";
-import UserInfoType from '../types/UserInfoType';
+import UserType from "../types/UserType";
 
-export const userInfo = types.model("UserInfo", {
+export const userItem = types.model("UserItem", {
   id: types.identifier,
-  name: types.string,
-  email: types.string,
-  balance: types.number,
+  name: types.string
 })
 
-const userInfoStore = types.model({
-    userInfo: types.optional(userInfo, { id: "", name: "", email: "", balance: 0 }),
+const getUsersStore = types.model({
+    transactions: types.optional(types.array(userItem), []),
     isLoading: types.optional(types.boolean, false)
   }).actions(self => ({
     setIsLoading(isLoading: boolean) {
       self.isLoading = isLoading;
     },
-    setUserInfo(userInfo: UserInfoType) {
-      //self.userInfo = userInfo
+    setTransactions(users: UserType[]) {
+      // self.transactions = transactions
     },
-    getUserInfo() {
+    getUsers(query: string) {
       this.setIsLoading(true);
 
-      (new UsersAPIService()).getUserInfo()
+      (new UsersAPIService()).getUsers(query)
       .then(res => res.json())
       .then(
         (result) => {
-          runInAction("getUserInfoSuccess", () => {
+          runInAction("getUsersSuccess", () => {
             this.setIsLoading(false);
           });
         },
         (error) => {
-          runInAction("getUserInfoInfo", () => {
+          runInAction("getUsersError", () => {
             this.setIsLoading(false);
           });
         }
@@ -40,4 +38,4 @@ const userInfoStore = types.model({
     },
 }))
 
-export default userInfoStore;
+export default getUsersStore;

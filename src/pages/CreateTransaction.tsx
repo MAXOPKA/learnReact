@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
+import { observer, inject } from "mobx-react";
 import { Box, TextField, List, ListItem, Button } from '@material-ui/core';
 import SelectUser from '../components/SelectUser';
+import Loader from '../components/Loader';
 
-class CreateTransaction extends Component {
-  constructor(props: any) {
-      super(props)
-  }
+interface CreateTransactionProps {
+  rootStore: any;
+  createTransactionStore: any;
+}
 
+@inject("rootStore")
+@observer
+class CreateTransaction extends Component<CreateTransactionProps> {
   render() {
     return(
-      <div>
+      <Box>
         <h2>Send PW</h2>
         <form noValidate autoComplete="off">
           <List component="nav">
@@ -26,7 +31,8 @@ class CreateTransaction extends Component {
             </ListItem>
           </List>
         </form>
-      </div>
+        <Loader isOpen={this.props.rootStore.loginStore.isLoading} />
+      </Box>
     );
   }
 }

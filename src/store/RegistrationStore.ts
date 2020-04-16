@@ -1,25 +1,29 @@
+import { runInAction } from "mobx";
 import { types } from "mobx-state-tree";
+import AccountAPIService from "../services/api/Account";
 
 const registrationStore = types.model({
-    name: types.optional(types.string, ''),
-    email: types.optional(types.string, ''),
-    password: types.optional(types.string, ''),
     isLoading: types.optional(types.boolean, false)
   }).actions(self => ({
-    setName(name) {
-      self.name = name
+    setIsLoading(isLoading: boolean) {
+      self.isLoading = isLoading;
     },
-    setEmail(email) {
-      self.email = email
-    },
-    setPassword(password) {
-      self.password = password
-    },
-    loadingStart() {
-      self.isLoading = true
-    },
-    loadingFinish() {
-      self.isLoading = false
+    registration(name: string, email: string, password: string) {
+      this.setIsLoading(true);
+      (new AccountAPIService()).registration(name, email, password)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          runInAction("registrationSuccess", () => {
+            this.setIsLoading(false);
+          });
+        },
+        (error) => {
+          runInAction("registrationError", () => {
+            this.setIsLoading(false);
+          });
+        }
+      )
     },
 }))
 

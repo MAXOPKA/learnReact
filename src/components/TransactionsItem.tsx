@@ -7,10 +7,6 @@ type TransactionsItemProps = {
 }
 
 class TransactionsItem extends Component<TransactionsItemProps> {
-  constructor(props: TransactionsItemProps) {
-    super(props)
-  }
-
   render() {
     return(
       <ListItem>

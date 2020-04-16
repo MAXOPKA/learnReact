@@ -1,26 +1,23 @@
 import React, { Component } from 'react';
 import { Button, Box, List, ListItem } from '@material-ui/core';
+import UserInfoType from '../types/UserInfoType';
 
-type = Props = {
-  
+type UserInfoProps = {
+  user?: UserInfoType
 }
 
-class SelectUser extends Component {
-  constructor(props: any) {
-      super(props)
-  }
-
+class UserInfo extends Component<UserInfoProps> {
   render() {
     return(
       <Box>
         <List>
           <ListItem>
             <span>Name</span>
-            <span>{this.props.user.name}</span>
+            <span></span>
           </ListItem>
           <ListItem>
             <span>Balance</span>
-            <span>{this.props.user.balance}</span>
+            <span></span>
           </ListItem>
         </List>
         <Button variant="contained" color="primary">
@@ -31,4 +28,4 @@ class SelectUser extends Component {
   }
 }
 
-export default SelectUser;
+export default UserInfo;

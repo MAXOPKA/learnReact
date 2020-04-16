@@ -1,8 +1,8 @@
-type UserInfo = {
+type UserInfoType = {
   id: number;
   name: string;
   email: string;
   balance: number;
 }
 
-export default UserInfo;
+export default UserInfoType;
