@@ -9,6 +9,8 @@ class AccountAPIService {
           headers,
           body: JSON.stringify({ email, password })
       }
+      console.log(options);
+
       const request = new Request(loginEndpoint, options);
       const response = await fetch(request);
       return response;

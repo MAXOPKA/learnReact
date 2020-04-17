@@ -3,7 +3,9 @@ import { types } from "mobx-state-tree";
 import AccountAPIService from "../services/api/Account";
 
 const registrationStore = types.model({
-    isLoading: types.optional(types.boolean, false)
+    isLoading: types.optional(types.boolean, false),
+    error: types.optional(types.boolean, false),
+    errorMessage: types.optional(types.string, "")
   }).actions(self => ({
     setIsLoading(isLoading: boolean) {
       self.isLoading = isLoading;

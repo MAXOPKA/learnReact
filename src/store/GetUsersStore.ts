@@ -9,8 +9,10 @@ export const userItem = types.model("UserItem", {
 })
 
 const getUsersStore = types.model({
-    transactions: types.optional(types.array(userItem), []),
-    isLoading: types.optional(types.boolean, false)
+    users: types.optional(types.array(userItem), []),
+    isLoading: types.optional(types.boolean, false),
+    error: types.optional(types.boolean, false),
+    errorMessage: types.optional(types.string, ""),
   }).actions(self => ({
     setIsLoading(isLoading: boolean) {
       self.isLoading = isLoading;

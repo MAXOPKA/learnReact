@@ -4,6 +4,7 @@ import {
   NavLink,
   BrowserRouter
 } from "react-router-dom";
+import { observer, inject } from "mobx-react";
 import Container from '@material-ui/core/Container';
 import { Provider } from "mobx-react";
 import { Instance } from "mobx-state-tree";
@@ -31,13 +32,6 @@ class App extends Component<AppProps> {
         <BrowserRouter>
           <Container maxWidth="sm" >
             <h1>Parrot Wings</h1>
-            <ul className='header'>
-              <UserInfo />
-              <li><NavLink to='/'>Transactions</NavLink></li>
-              <li><NavLink to='/login'>Login</NavLink></li>
-              <li><NavLink to='/registration'>Registration</NavLink></li>
-              <li><NavLink to='/create-transaction'>Create Transaction</NavLink></li>
-            </ul>
             <div className='content'>
               <Route exact path='/' component={Trancactions}/>
               <Route path='/login' component={Login}/>

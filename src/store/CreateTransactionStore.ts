@@ -1,9 +1,12 @@
 import { runInAction } from "mobx";
 import { types } from "mobx-state-tree";
 import TransactionsAPIService from "../services/api/Transactions";
+import { handleResponse } from "../services/api/Utils";
 
 const createTransactionStore = types.model({
-    isLoading: types.optional(types.boolean, false)
+    isLoading: types.optional(types.boolean, false),
+    error: types.optional(types.boolean, false),
+    errorMessage: types.optional(types.string, "")
   }).actions(self => ({
     setIsLoading(isLoading: boolean) {
       self.isLoading = isLoading;

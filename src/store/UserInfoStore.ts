@@ -12,7 +12,9 @@ export const userInfo = types.model("UserInfo", {
 
 const userInfoStore = types.model({
     userInfo: types.optional(userInfo, { id: "", name: "", email: "", balance: 0 }),
-    isLoading: types.optional(types.boolean, false)
+    isLoading: types.optional(types.boolean, false),
+    error: types.optional(types.boolean, false),
+    errorMessage: types.optional(types.string, ""),
   }).actions(self => ({
     setIsLoading(isLoading: boolean) {
       self.isLoading = isLoading;
