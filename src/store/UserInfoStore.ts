@@ -33,7 +33,6 @@ const userInfoStore = types.model({
       this.setIsLoading(true);
 
       (new UsersAPIService()).getUserInfo()
-      .then(res => res.json())
       .then(
         (result) => {
           runInAction("getUserInfoSuccess", () => {

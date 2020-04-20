@@ -1,5 +1,6 @@
 import loginStore from '../../store/LoginStore';
 import { transactionsEndpoint } from './Endpoints';
+import { responseHandler } from './Utils';
 
 class TransactionsAPIService {
   getTransactions = async () => {
@@ -9,20 +10,20 @@ class TransactionsAPIService {
     var options = { headers }
     const request = new Request(transactionsEndpoint, options);
     const response = await fetch(request);
-    return response;
+    return responseHandler(response);
   }
-  createTransaction = async (userName: string, amount: number) => {
+  createTransaction = async (name: string, amount: number) => {
       const headers = new Headers();
       headers.append("Content-Type", "application/json");
       headers.append("Authorization", "Bearer " + loginStore.token)
       var options = {
           method: "POST",
           headers,
-          body: JSON.stringify({ userName, amount })
+          body: JSON.stringify({ name, amount })
       }
       const request = new Request(transactionsEndpoint, options);
       const response = await fetch(request);
-      return response;
+      return responseHandler(response);
     }
   }
 

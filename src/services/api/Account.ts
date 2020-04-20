@@ -1,5 +1,6 @@
 import loginStore from '../../store/LoginStore';
 import { loginEndpoint, registrationEndpoint } from './Endpoints';
+import { responseHandler } from './Utils';
 
 class AccountAPIService {
   login = async (email: string, password: string) => {
@@ -10,11 +11,11 @@ class AccountAPIService {
           headers,
           body: JSON.stringify({ email, password })
       }
-      console.log(options);
 
       const request = new Request(loginEndpoint, options);
       const response = await fetch(request);
-      return response;
+
+      return responseHandler(response);
   }
   registration = async (name: string, email: string, password: string) => {
       const headers = new Headers();
@@ -26,7 +27,7 @@ class AccountAPIService {
       }
       const request = new Request(registrationEndpoint, options);
       const response = await fetch(request);
-      return response;
+      return responseHandler(response);
   }
 }
 

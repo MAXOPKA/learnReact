@@ -33,7 +33,12 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
 
   renderTransactionsList = (transactions: TransactionType[]) => (
     <List component="nav">
-      { transactions.map((transaction: TransactionType) => <TransactionsItem { ...{ transaction: transaction } } />) }
+      { transactions.map((transaction: TransactionType) =>
+        <TransactionsItem
+          key={transaction.id}
+          { ...{ transaction: transaction } }
+        />
+      )}
     </List>
   );
 

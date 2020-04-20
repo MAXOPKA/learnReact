@@ -1,10 +1,10 @@
 import { runInAction } from "mobx";
-import { types } from "mobx-state-tree";
+import { types, cast } from "mobx-state-tree";
 import UsersAPIService from "../services/api/Users";
 import UserType from "../types/UserType";
 
 export const userItem = types.model("UserItem", {
-  id: types.identifier,
+  id: types.number,
   name: types.string
 })
 
@@ -17,22 +17,23 @@ const getUsersStore = types.model({
     setIsLoading(isLoading: boolean) {
       self.isLoading = isLoading;
     },
-    setTransactions(users: UserType[]) {
-      // self.transactions = transactions
+    setUsers(users: UserType[]) {
+      self.users = cast(users);
     },
-    getUsers(query: string) {
+    getUsers(filter: string) {
       this.setIsLoading(true);
 
-      (new UsersAPIService()).getUsers(query)
-      .then(res => res.json())
+      (new UsersAPIService()).getUsers(filter)
       .then(
         (result) => {
           runInAction("getUsersSuccess", () => {
+            this.setUsers(result);
             this.setIsLoading(false);
           });
         },
         (error) => {
           runInAction("getUsersError", () => {
+            this.setUsers([]);
             this.setIsLoading(false);
           });
         }

@@ -1,7 +1,7 @@
 import { runInAction } from "mobx";
 import { types } from "mobx-state-tree";
+import userInfoStore from "./UserInfoStore";
 import AccountAPIService from '../services/api/Account';
-import { handleResponse } from "../services/api/Utils";
 
 const loginStore = types.model({
     isLoading: types.optional(types.boolean, false),
@@ -18,24 +18,25 @@ const loginStore = types.model({
       self.token = token;
       window.localStorage.setItem('jwt', token);
     },
+    setError(error: boolean, errorMessage?: string) {
+      self.error = error;
+      self.errorMessage = errorMessage || "";
+    },
     login(email: string, password: string) {
       this.setIsLoading(true);
 
       (new AccountAPIService()).login(email, password)
-      .then(res => handleResponse(res))
       .then(
         (result) => {
           runInAction("loginSuccess", () => {
-            console.log(result);
-
             this.setToken(result.id_token);
             this.setIsLoading(false);
+            userInfoStore.getUserInfo();
           });
         },
         (error) => {
           runInAction("loginError", () => {
-            console.log('errror');
-
+            this.setError(true, error);
             this.setIsLoading(false);
           });
         }
