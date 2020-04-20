@@ -1,22 +1,24 @@
 import React, { Component } from 'react';
 import { observer, inject } from "mobx-react";
-import { Redirect } from "react-router-dom";
-import { Box, List } from '@material-ui/core';
+import { Redirect, useHistory } from "react-router-dom";
+import { Box, List, Button } from '@material-ui/core';
+import loginStore from '../store/LoginStore';
+import transactionsStore from '../store/TransactionsStore';
 import TransactionsItem from '../components/TransactionsItem';
 import TransactionType from '../types/TransactionType';
 import Loader from '../components/Loader';
 import ErrorMessage from '../components/ErrorMessage';
 
 interface TransactionsProps {
-  rootStore: any;
-  transactionsStore: any;
+  loginStore?: any;
+  transactionsStore?: any;
 }
 
 interface TransactionsState {
   errorMessage?: string;
 }
 
-@inject("rootStore")
+@inject("loginStore", "transactionsStore")
 @observer
 class Transactions extends Component<TransactionsProps, TransactionsState> {
   constructor(props: TransactionsProps) {
@@ -26,7 +28,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
   }
 
   componentDidMount() {
-    this.props.rootStore.transactionsStore.getTransactions()
+    this.props.transactionsStore.getTransactions()
   }
 
   renderTransactionsList = (transactions: TransactionType[]) => (
@@ -39,7 +41,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     <h3>No transactions</h3>
   );
 
-  isLogin = () => (this.props.rootStore.loginStore.token !== "");
+  isLogin = () => (this.props.loginStore.token !== "");
 
   render() {
     if(!this.isLogin()) {
@@ -48,7 +50,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       );
     }
 
-    const { isLoading, transactions, error, errorMessage } = this.props.rootStore.transactionsStore;
+    const { isLoading, transactions, error, errorMessage } = this.props.transactionsStore;
 
     return(
       <Box>
@@ -59,6 +61,9 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
           isOpen={error}
           message={this.state.errorMessage || errorMessage}
         />
+        <Button href="/create-transaction" variant="contained" color="secondary">
+          Send PW
+        </Button>
         <Loader isOpen={isLoading} />
       </Box>
     );

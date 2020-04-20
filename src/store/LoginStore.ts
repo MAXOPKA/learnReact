@@ -7,13 +7,16 @@ const loginStore = types.model({
     isLoading: types.optional(types.boolean, false),
     error: types.optional(types.boolean, false),
     errorMessage: types.optional(types.string, ""),
-    token: types.optional(types.string, ""),
+    token: types.optional(types.string, window.localStorage.getItem('jwt') || ""),
   }).actions(self => ({
     setIsLoading(isLoading: boolean) {
       self.isLoading = isLoading;
     },
     setToken(token: string) {
+      console.log("set Token" + token);
+
       self.token = token;
+      window.localStorage.setItem('jwt', token);
     },
     login(email: string, password: string) {
       this.setIsLoading(true);
@@ -40,4 +43,4 @@ const loginStore = types.model({
     },
 }))
 
-export default loginStore;
+export default loginStore.create();

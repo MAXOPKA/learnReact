@@ -1,5 +1,6 @@
 import { runInAction } from "mobx";
 import { types } from "mobx-state-tree";
+import loginStore from "./LoginStore";
 import AccountAPIService from "../services/api/Account";
 
 const registrationStore = types.model({
@@ -17,6 +18,7 @@ const registrationStore = types.model({
       .then(
         (result) => {
           runInAction("registrationSuccess", () => {
+            loginStore.setToken(result.id_token);
             this.setIsLoading(false);
           });
         },
@@ -29,4 +31,4 @@ const registrationStore = types.model({
     },
 }))
 
-export default registrationStore;
+export default registrationStore.create();

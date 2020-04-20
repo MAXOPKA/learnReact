@@ -31,4 +31,4 @@ const createTransactionStore = types.model({
     },
 }))
 
-export default createTransactionStore;
+export default createTransactionStore.create();

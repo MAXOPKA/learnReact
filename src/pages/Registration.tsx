@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import { observer, inject } from "mobx-react";
 import { Redirect, useHistory } from "react-router-dom";
 import { Box, TextField, List, ListItem, Button } from '@material-ui/core';
+import loginStore from '../store/LoginStore';
+import registrationStore from '../store/RegistrationStore';
 import { validateEmail } from '../Utils';
 import Loader from '../components/Loader';
 import ErrorMessage from '../components/ErrorMessage';
 
 interface RegistrationProps {
-  rootStore: any;
-  registrationStore: any;
+  loginStore?: any;
+  registrationStore?: any;
 }
 
 interface RegistrationState {
@@ -19,7 +21,7 @@ interface RegistrationState {
   errorMessage?: string;
 }
 
-@inject("rootStore")
+@inject("loginStore", "registrationStore")
 @observer
 class Registration extends Component<RegistrationProps, RegistrationState> {
   constructor(props: RegistrationProps) {
@@ -37,7 +39,6 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
     this.handleChangePassword = this.handleChangePassword.bind(this);
     this.handleChangeRetryPassword = this.handleChangeRetryPassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleLogin = this.handleLogin.bind(this);
   }
 
   handleChangeName = (event: any) => {
@@ -58,17 +59,11 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
 
   handleSubmit = (event: any) => {
     if(this.validate()) {
-      this.props.rootStore.registrationStore.registration(this.state.name, this.state.email, this.state.password);
+      this.props.registrationStore.registration(this.state.name, this.state.email, this.state.password);
     }
   }
 
-  handleLogin = (event: any) => {
-    const history = useHistory();
-
-    history.push("/login");
-  }
-
-  isLogin = () => (this.props.rootStore.loginStore.token !== "");
+  isLogin = () => (this.props.loginStore.token !== "");
 
   validate = (): boolean => {
     const { name, email, password, retryPassword } = this.state;
@@ -156,8 +151,8 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
             </ListItem>
             <ListItem>
               <ErrorMessage
-                isOpen={this.props.rootStore.registrationStore.error || this.state.errorMessage}
-                message={this.state.errorMessage || this.props.rootStore.registrationStore.errorMessage}
+                isOpen={this.props.registrationStore.error || this.state.errorMessage}
+                message={this.state.errorMessage || this.props.registrationStore.errorMessage}
               />
             </ListItem>
             <ListItem>
@@ -166,13 +161,13 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
               </Button>
             </ListItem>
             <ListItem>
-              <Button onClick={this.handleLogin} variant="contained" color="secondary">
+              <Button href="/login" variant="contained" color="secondary">
                 Login
               </Button>
             </ListItem>
           </List>
         </form>
-        <Loader isOpen={this.props.rootStore.registrationStore.isLoading} />
+        <Loader isOpen={this.props.registrationStore.isLoading} />
       </Box>
     );
   }

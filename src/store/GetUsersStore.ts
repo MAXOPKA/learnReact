@@ -40,4 +40,4 @@ const getUsersStore = types.model({
     },
 }))
 
-export default getUsersStore;
+export default getUsersStore.create();

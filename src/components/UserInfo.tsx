@@ -4,10 +4,11 @@ import { Button, Box, List, ListItem } from '@material-ui/core';
 import UserInfoType from '../types/UserInfoType';
 
 type UserInfoProps = {
-  rootStore: any;
+  loginStore?: any;
+  userInfoStore?: any;
 }
 
-@inject("rootStore")
+@inject("loginStore", "userInfoStore")
 @observer
 class UserInfo extends Component<UserInfoProps> {
   constructor(props: UserInfoProps) {
@@ -16,13 +17,19 @@ class UserInfo extends Component<UserInfoProps> {
     this.handleLogout = this.handleLogout.bind(this);
   }
 
-  handleLogout = () => {
+  componentDidMount() {
     if(this.isLogin()) {
-        this.props.rootStore.loginStore.setToken("");
+        this.props.userInfoStore.getUserInfo();
     }
   }
 
-  isLogin = () => (this.props.rootStore.loginStore.token !== "");
+  handleLogout = () => {
+    if(this.isLogin()) {
+        this.props.loginStore.setToken("");
+    }
+  }
+
+  isLogin = () => (this.props.loginStore.token !== "");
 
   render() {
     if(!this.isLogin()) {
@@ -33,12 +40,12 @@ class UserInfo extends Component<UserInfoProps> {
       <Box>
         <List>
           <ListItem>
-            <span>Name</span>
-            <span></span>
+            <span>Name&nbsp;</span>
+            <span>{this.props.userInfoStore.userInfo.name}</span>
           </ListItem>
           <ListItem>
-            <span>Balance</span>
-            <span></span>
+            <span>Balance&nbsp;</span>
+            <span>{this.props.userInfoStore.userInfo.balance}&nbsp;PW</span>
           </ListItem>
         </List>
         <Button onClick={this.handleLogout} variant="contained" color="primary">

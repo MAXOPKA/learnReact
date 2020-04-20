@@ -1,3 +1,4 @@
+import loginStore from '../../store/LoginStore';
 import { loginEndpoint, registrationEndpoint } from './Endpoints';
 
 class AccountAPIService {
@@ -21,7 +22,7 @@ class AccountAPIService {
       var options = {
           method: "POST",
           headers,
-          body: JSON.stringify({ name, email, password })
+          body: JSON.stringify({ username: name, email, password })
       }
       const request = new Request(registrationEndpoint, options);
       const response = await fetch(request);

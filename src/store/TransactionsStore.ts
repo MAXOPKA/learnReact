@@ -1,11 +1,11 @@
 import { runInAction } from "mobx";
-import { types } from "mobx-state-tree";
+import { types, cast } from "mobx-state-tree";
 import TransactionsAPIService from "../services/api/Transactions";
 import { handleResponse } from "../services/api/Utils";
 import TransactionType from '../types/TransactionType';
 
 export const transaction = types.model("Transaction", {
-  id: types.identifier,
+  id: types.number,
   date: types.string,
   username: types.string,
   amount: types.number,
@@ -21,12 +21,12 @@ const transactionsStore = types.model({
     setIsLoading(isLoading: boolean) {
       self.isLoading = isLoading;
     },
-    setTransactions(transactions?: TransactionType[]) {
-      // self.transactions = transactions
+    setTransactions(transactions: TransactionType[]) {
+      self.transactions = cast(transactions);
     },
     setError(error: boolean, errorMessage?: string) {
       self.error = error;
-      // self.errorMessage = errorMessage || null;
+      self.errorMessage = errorMessage || "";
     },
     getTransactions() {
       this.setIsLoading(true);
@@ -36,6 +36,7 @@ const transactionsStore = types.model({
       .then(
         (result) => {
           runInAction("getTransactionsSuccess", () => {
+            this.setTransactions(result.trans_token);
             this.setIsLoading(false);
           });
         },
@@ -51,4 +52,4 @@ const transactionsStore = types.model({
     },
 }))
 
-export default transactionsStore;
+export default transactionsStore.create();

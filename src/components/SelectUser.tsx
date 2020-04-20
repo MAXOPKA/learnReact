@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { observer, inject } from "mobx-react";
 import { Box, List, ListItem, ListItemText, CircularProgress, TextField } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import UserType from '../types/UserType';
+import getUsersStore from '../store/GetUsersStore';
 
 interface SelectUserProps {
-  rootStore: any;
+  getUsersStore?: any;
 }
 
-@inject('rootStore')
+@inject('getUsersStore')
 @observer
 class SelectUser extends Component<SelectUserProps> {
   renderUsersList = (users: UserType[]) => (
@@ -33,14 +35,17 @@ class SelectUser extends Component<SelectUserProps> {
   );
 
   render() {
-    const { isLoading, users } = this.props.rootStore.getUsersStore;
+    const { isLoading, users } = this.props.getUsersStore;
 
     return(
       <Box>
-        <TextField id="standard-basic" label="User" />
-        {(!isLoading && users.length === 0) && this.renderEmptyUsersListMessage() }
-        {(!isLoading && users.length !== 0) && this.renderUsersList(users) }
-        {(isLoading) && this.renderLoader()}
+        <Autocomplete
+          id="user-combo-box"
+          options={users}
+          getOptionLabel={(option: UserType) => option.name}
+          style={{ width: 300 }}
+          renderInput={(params) => <TextField {...params} label="Select user" variant="outlined" />}
+        />
       </Box>
     );
   }

@@ -8,8 +8,9 @@ import Loader from '../components/Loader';
 import ErrorMessage from '../components/ErrorMessage';
 
 interface CreateTransactionProps {
-  rootStore: any;
-  createTransactionStore: any;
+  createTransactionStore?: any;
+  loginStore?: any;
+  userInfoStore?: any;
 }
 
 interface CreateTransactionState {
@@ -19,7 +20,7 @@ interface CreateTransactionState {
   selectedUser?: UserType;
 }
 
-@inject("rootStore")
+@inject("createTransactionStore", "loginStore")
 @observer
 class CreateTransaction extends Component<CreateTransactionProps, CreateTransactionState> {
   constructor(props: CreateTransactionProps) {
@@ -40,11 +41,11 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
 
   handleSubmit = (event: any) => {
     if(this.validate()) {
-      this.props.rootStore.loginStore.createTransaction(this.state.selectedUser?.name || "", this.state.amount);
+      this.props.loginStore.createTransaction(this.state.selectedUser?.name || "", this.state.amount);
     }
   }
 
-  isLogin = () => (this.props.rootStore.loginStore.token !== "");
+  isLogin = () => (this.props.loginStore.token !== "");
 
   validate = (): boolean => {
     const { selectedUser, amount } = this.state;
@@ -57,7 +58,7 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
       return false;
     }
 
-    if (selectedUser.id === this.props.rootStore.userInfoStore.userInfo.name) {
+    if (selectedUser.id === this.props.userInfoStore.userInfo.name) {
       this.setState((prevState: CreateTransactionState) => {
         return({ ...prevState, error: true, errorMessage: "You can not send yourself" } as CreateTransactionState);
       })
@@ -73,7 +74,7 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
       return false;
     }
 
-    if (amount > this.props.rootStore.userInfoStore.userInfo.balance) {
+    if (amount > this.props.userInfoStore.userInfo.balance) {
       this.setState((prevState: CreateTransactionState) => {
         return({ ...prevState, error: true, errorMessage: "Not enough money" } as CreateTransactionState);
       })
@@ -85,6 +86,9 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
   }
 
   render() {
+    console.log(this.props);
+
+
     if(!this.isLogin()) {
       return(
         <Redirect to={{ pathname: '/login' }} />
@@ -97,7 +101,7 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
         <form noValidate autoComplete="off">
           <List component="nav">
             <ListItem>
-              <SelectUser rootStore={this.props.rootStore} />
+              <SelectUser />
             </ListItem>
             <ListItem>
               <TextField
@@ -107,8 +111,8 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
             </ListItem>
             <ListItem>
               <ErrorMessage
-                isOpen={this.props.rootStore.createTransactionStore.error}
-                message={this.state.errorMessage || this.props.rootStore.createTransactionStore.errorMessage}
+                isOpen={this.props.createTransactionStore.error}
+                message={this.state.errorMessage || this.props.createTransactionStore.errorMessage}
               />
             </ListItem>
             <ListItem>
@@ -118,7 +122,7 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
             </ListItem>
           </List>
         </form>
-        <Loader isOpen={this.props.rootStore.loginStore.isLoading} />
+        <Loader isOpen={this.props.createTransactionStore.isLoading} />
       </Box>
     );
   }

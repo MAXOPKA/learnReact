@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { Box, TextField, List, ListItem, Button } from '@material-ui/core';
 import { Redirect, useHistory } from "react-router-dom";
 import { observer, inject } from "mobx-react";
+import loginStore from '../store/LoginStore';
 import { validateEmail } from '../Utils';
 import Loader from '../components/Loader';
 import ErrorMessage from '../components/ErrorMessage';
 
 interface LoginProps {
-  rootStore: any;
-  loginStore: any;
+  loginStore?: any;
 }
 
 interface LoginState {
@@ -17,7 +17,7 @@ interface LoginState {
   password: string;
 }
 
-@inject("rootStore")
+@inject("loginStore")
 @observer
 class Login extends Component<LoginProps, LoginState> {
   constructor(props: LoginProps) {
@@ -31,7 +31,6 @@ class Login extends Component<LoginProps, LoginState> {
     this.handleChangeEmail = this.handleChangeEmail.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleRegistration = this.handleRegistration.bind(this);
   }
 
   handleChangeEmail = (event: any) => {
@@ -44,22 +43,16 @@ class Login extends Component<LoginProps, LoginState> {
 
   handleSubmit = (event: any) => {
     if(this.validate()) {
-      this.props.rootStore.loginStore.login(this.state.email, this.state.password);
+      this.props.loginStore.login(this.state.email, this.state.password);
     }
   }
 
-  handleRegistration = (event: any) => {
-    const history = useHistory();
-
-    history.push("/registration");
-  }
-
-  isLogin = () => (this.props.rootStore.loginStore.token !== "");
+  isLogin = () => (this.props.loginStore.token !== "");
 
   validate = (): boolean => {
     const { email, password } = this.state;
 
-    if (email === "") {
+    if (!validateEmail(email)) {
       this.setState((prevState: LoginState) => {
         return({ ...prevState, error: true, errorMessage: "Email is not a valid" } as LoginState);
       })
@@ -97,8 +90,8 @@ class Login extends Component<LoginProps, LoginState> {
           </ListItem>
           <ListItem>
             <ErrorMessage
-              isOpen={this.props.rootStore.loginStore.error || this.state.errorMessage }
-              message={this.state.errorMessage || this.props.rootStore.loginStore.errorMessage}
+              isOpen={this.props.loginStore.error || this.state.errorMessage }
+              message={this.state.errorMessage || this.props.loginStore.errorMessage}
             />
           </ListItem>
           <ListItem>
@@ -107,12 +100,12 @@ class Login extends Component<LoginProps, LoginState> {
             </Button>
           </ListItem>
           <ListItem>
-            <Button onClick={this.handleRegistration} variant="contained" color="secondary">
+            <Button href="/registration" variant="contained" color="secondary">
               Registration
             </Button>
           </ListItem>
         </List>
-        <Loader isOpen={this.props.rootStore.loginStore.isLoading} />
+        <Loader isOpen={this.props.loginStore.isLoading} />
       </Box>
     );
   }
