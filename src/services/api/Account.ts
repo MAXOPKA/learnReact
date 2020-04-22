@@ -1,9 +1,8 @@
-import loginStore from '../../store/LoginStore';
 import { loginEndpoint, registrationEndpoint } from './Endpoints';
 import { responseHandler } from './Utils';
 
 class AccountAPIService {
-  login = async (email: string, password: string) => {
+  static login = async (email: string, password: string) => {
       const headers = new Headers();
       headers.append("Content-Type", "application/json");
       var options = {
@@ -17,7 +16,8 @@ class AccountAPIService {
 
       return responseHandler(response);
   }
-  registration = async (name: string, email: string, password: string) => {
+
+  static registration = async (name: string, email: string, password: string) => {
       const headers = new Headers();
       headers.append("Content-Type", "application/json");
       var options = {

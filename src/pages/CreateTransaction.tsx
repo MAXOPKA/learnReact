@@ -3,28 +3,29 @@ import { observer, inject } from "mobx-react";
 import { Redirect } from "react-router-dom";
 import { Box, TextField, List, ListItem, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import UserType from '../types/UserType';
+import IUser from '../interfaces/IUser';
 import Loader from '../components/Loader';
 import ErrorMessage from '../components/ErrorMessage';
 
-interface CreateTransactionProps {
+interface ICreateTransactionProps {
   createTransactionStore?: any;
   loginStore?: any;
   userInfoStore?: any;
   getUsersStore?: any;
+  routerStore?: any;
 }
 
-interface CreateTransactionState {
+interface ICreateTransactionState {
   errorMessage?: string;
   amount: number;
   name: string;
-  selectedUser?: UserType;
+  selectedUser?: IUser;
 }
 
-@inject("createTransactionStore", "loginStore", "userInfoStore", "getUsersStore")
+@inject("createTransactionStore", "loginStore", "userInfoStore", "getUsersStore", "routerStore")
 @observer
-class CreateTransaction extends Component<CreateTransactionProps, CreateTransactionState> {
-  constructor(props: CreateTransactionProps) {
+class CreateTransaction extends Component<ICreateTransactionProps, ICreateTransactionState> {
+  constructor(props: ICreateTransactionProps) {
     super(props);
 
     this.state = {
@@ -41,71 +42,73 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
   handleChangeAmount = (event: any) => {
     const amountValue = parseFloat(event.target.value);
     if (!isNaN(amountValue) || event.target.value === "") {
-      this.setState((prevState: CreateTransactionState) => {
+      this.setState((prevState: ICreateTransactionState) => {
         return({
           ...prevState,
           amount: isNaN(amountValue) ? "" : amountValue,
           errorMessage: undefined
-        } as CreateTransactionState);
+        } as ICreateTransactionState);
       });
     }
   }
 
   handleUserNameInputChange = (event: any, value: string) => {
-    this.setState((prevState: CreateTransactionState) => {
-      return({ ...prevState, name: value } as CreateTransactionState);
+    const { getUsers } = this.props.getUsersStore;
+
+    this.setState((prevState: ICreateTransactionState) => {
+      return({ ...prevState, name: value } as ICreateTransactionState);
     });
     if (value !== "") {
-      this.props.getUsersStore.getUsers(value);
+      getUsers(value);
     }
   }
 
   handleUserChange = (event: any, value?: any) => {
-    this.setState((prevState: CreateTransactionState) => {
-      return({ ...prevState, selectedUser: { ...value }} as CreateTransactionState);
+    this.setState((prevState: ICreateTransactionState) => {
+      return({ ...prevState, selectedUser: { ...value }} as ICreateTransactionState);
     });
   }
 
   handleSubmit = (event: any) => {
-    console.log(this.state);
+    const { createTransactionStore } = this.props;
+    const { selectedUser, amount } = this.state;
 
     if(this.validate()) {
-      this.props.createTransactionStore.createTransaction(this.state.selectedUser?.name || "", this.state.amount);
+      createTransactionStore.createTransaction(selectedUser?.name || "", amount);
     }
   }
 
-  isLogin = () => (this.props.loginStore.token !== "");
-
   validate = (): boolean => {
     const { selectedUser, amount } = this.state;
+    const { userInfoStore } = this.props;
 
     if (!selectedUser) {
-      this.setState((prevState: CreateTransactionState) => {
-        return({ ...prevState, error: true, errorMessage: "User not selected" } as CreateTransactionState);
+      this.setState((prevState: ICreateTransactionState) => {
+        return({ ...prevState, error: true, errorMessage: "User not selected" } as ICreateTransactionState);
       })
 
       return false;
     }
 
-    if (selectedUser.id === this.props.userInfoStore.userInfo.name) {
-      this.setState((prevState: CreateTransactionState) => {
-        return({ ...prevState, error: true, errorMessage: "You can not send yourself" } as CreateTransactionState);
+    if (selectedUser.id === userInfoStore.userInfo.name) {
+      this.setState((prevState: ICreateTransactionState) => {
+        return({ ...prevState, error: true, errorMessage: "You can not send yourself" } as ICreateTransactionState);
       })
 
       return false;
     }
 
     if (amount <= 0) {
-      this.setState((prevState: CreateTransactionState) => {
-        return({ ...prevState, error: true, errorMessage: "Invalid amount value" } as CreateTransactionState);
+      this.setState((prevState: ICreateTransactionState) => {
+        return({ ...prevState, error: true, errorMessage: "Invalid amount value" } as ICreateTransactionState);
       })
 
       return false;
     }
 
-    if (amount > this.props.userInfoStore.userInfo.balance) {
-      this.setState((prevState: CreateTransactionState) => {
-        return({ ...prevState, error: true, errorMessage: "Not enough money" } as CreateTransactionState);
+    if (amount > userInfoStore.userInfo.balance) {
+      this.setState((prevState: ICreateTransactionState) => {
+        return({ ...prevState, error: true, errorMessage: "Not enough money" } as ICreateTransactionState);
       })
 
       return false;
@@ -115,11 +118,16 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
   }
 
   render() {
-    if(!this.isLogin()) {
+    const { errorMessage, name, amount } = this.state;
+    const { loginStore, getUsersStore, createTransactionStore, routerStore } = this.props;
+
+    if(!loginStore.isLogin()) {
+      routerStore.replace('/login');
+
       return(<Redirect to={{ pathname: '/login' }} />);
     }
 
-    if(this.props.createTransactionStore.isCreated) {
+    if(createTransactionStore.isCreated) {
       return(<Redirect to={{ pathname: '/' }} />);
     }
 
@@ -132,10 +140,10 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
               <Autocomplete
                 onChange={this.handleUserChange}
                 onInputChange={this.handleUserNameInputChange}
-                inputValue={this.state.name}
+                inputValue={name}
                 id="user-combo-box"
-                options={this.props.getUsersStore.users}
-                getOptionLabel={(option: UserType) => `${option.name} (id: ${option.id})`}
+                options={getUsersStore.users}
+                getOptionLabel={(option: IUser) => `${option.name} (id: ${option.id})`}
                 style={{ width: 300 }}
                 renderInput={(params) => <TextField {...params} label="Select user" variant="outlined" />}
               />
@@ -144,14 +152,14 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
               <TextField
                 id="create-transaction-amount"
                 label="Amount"
-                value={this.state.amount}
+                value={amount}
                 onChange={this.handleChangeAmount}
               />
             </ListItem>
             <ListItem>
               <ErrorMessage
-                isOpen={this.props.createTransactionStore.error || this.state.errorMessage}
-                message={this.state.errorMessage || this.props.createTransactionStore.errorMessage}
+                isOpen={createTransactionStore.error || errorMessage}
+                message={createTransactionStore.errorMessage || errorMessage}
               />
             </ListItem>
             <ListItem>
@@ -161,7 +169,7 @@ class CreateTransaction extends Component<CreateTransactionProps, CreateTransact
             </ListItem>
           </List>
         </form>
-        <Loader isOpen={this.props.createTransactionStore.isLoading} />
+        <Loader isOpen={createTransactionStore.isLoading} />
       </Box>
     );
   }

@@ -1,39 +1,30 @@
 import React, { Component } from 'react';
 import { observer, inject } from "mobx-react";
-import { Redirect, useHistory } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { Box, List, Button } from '@material-ui/core';
-import loginStore from '../store/LoginStore';
-import transactionsStore from '../store/TransactionsStore';
 import TransactionsItem from '../components/TransactionsItem';
-import TransactionType from '../types/TransactionType';
+import ITransaction from '../interfaces/ITransaction';
 import Loader from '../components/Loader';
 import ErrorMessage from '../components/ErrorMessage';
 
-interface TransactionsProps {
+interface ITransactionsProps {
   loginStore?: any;
   transactionsStore?: any;
+  routerStore?: any;
 }
 
-interface TransactionsState {
-  errorMessage?: string;
-}
-
-@inject("loginStore", "transactionsStore")
+@inject("loginStore", "transactionsStore", "routerStore")
 @observer
-class Transactions extends Component<TransactionsProps, TransactionsState> {
-  constructor(props: TransactionsProps) {
-    super(props);
-
-    this.state = {};
-  }
-
+class Transactions extends Component<ITransactionsProps> {
   componentDidMount() {
-    this.props.transactionsStore.getTransactions()
+    const { getTransactions } = this.props.transactionsStore;
+
+    getTransactions()
   }
 
-  renderTransactionsList = (transactions: TransactionType[]) => (
+  renderTransactionsList = (transactions: ITransaction[]) => (
     <List component="nav">
-      { transactions.map((transaction: TransactionType) =>
+      { transactions.map((transaction: ITransaction) =>
         <TransactionsItem
           key={transaction.id}
           { ...{ transaction: transaction } }
@@ -46,16 +37,15 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     <h3>No transactions</h3>
   );
 
-  isLogin = () => (this.props.loginStore.token !== "");
-
   render() {
-    if(!this.isLogin()) {
-      return(
-        <Redirect to={{ pathname: '/login' }} />
-      );
-    }
-
+    const { loginStore, routerStore } = this.props;
     const { isLoading, transactions, error, errorMessage } = this.props.transactionsStore;
+
+    if(!loginStore.isLogin()) {
+      routerStore.replace('/login');
+
+      return(<Redirect to={{ pathname: '/login' }} />);
+    }
 
     return(
       <Box>
@@ -64,7 +54,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         {(!isLoading && transactions.length !== 0) && this.renderTransactionsList(transactions) }
         <ErrorMessage
           isOpen={error}
-          message={this.state.errorMessage || errorMessage}
+          message={errorMessage}
         />
         <Button href="/create-transaction" variant="contained" color="secondary">
           Send PW

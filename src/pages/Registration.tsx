@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import { observer, inject } from "mobx-react";
-import { Redirect, useHistory } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { Box, TextField, List, ListItem, Button } from '@material-ui/core';
-import loginStore from '../store/LoginStore';
-import registrationStore from '../store/RegistrationStore';
 import { validateEmail } from '../Utils';
 import Loader from '../components/Loader';
 import ErrorMessage from '../components/ErrorMessage';
 
-interface RegistrationProps {
+interface IRegistrationProps {
   loginStore?: any;
   registrationStore?: any;
+  routerStore?: any;
 }
 
-interface RegistrationState {
+interface IRegistrationState {
   name: string;
   email: string;
   password: string;
@@ -21,10 +20,10 @@ interface RegistrationState {
   errorMessage?: string;
 }
 
-@inject("loginStore", "registrationStore")
+@inject("loginStore", "registrationStore", "routerStore")
 @observer
-class Registration extends Component<RegistrationProps, RegistrationState> {
-  constructor(props: RegistrationProps) {
+class Registration extends Component<IRegistrationProps, IRegistrationState> {
+  constructor(props: IRegistrationProps) {
     super(props);
 
     this.state = {
@@ -58,43 +57,44 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
   }
 
   handleSubmit = (event: any) => {
+    const { registration } = this.props.registrationStore;
+    const { name, email, password } = this.state;
+
     if(this.validate()) {
-      this.props.registrationStore.registration(this.state.name, this.state.email, this.state.password);
+      registration(name, email, password);
     }
   }
-
-  isLogin = () => (this.props.loginStore.token !== "");
 
   validate = (): boolean => {
     const { name, email, password, retryPassword } = this.state;
 
     if (name === "") {
-      this.setState((prevState: RegistrationState) => {
-        return({ ...prevState, error: true, errorMessage: "Name is empty" } as RegistrationState);
+      this.setState((prevState: IRegistrationState) => {
+        return({ ...prevState, error: true, errorMessage: "Name is empty" } as IRegistrationState);
       })
 
       return false;
     }
 
     if (!validateEmail(email)) {
-      this.setState((prevState: RegistrationState) => {
-        return({ ...prevState, error: true, errorMessage: "Email is not a valid" } as RegistrationState);
+      this.setState((prevState: IRegistrationState) => {
+        return({ ...prevState, error: true, errorMessage: "Email is not a valid" } as IRegistrationState);
       })
 
       return false;
     }
 
     if (password === "") {
-      this.setState((prevState: RegistrationState) => {
-        return({ ...prevState, error: true, errorMessage: "Empty password" } as RegistrationState);
+      this.setState((prevState: IRegistrationState) => {
+        return({ ...prevState, error: true, errorMessage: "Empty password" } as IRegistrationState);
       })
 
       return false;
     }
 
     if (password !== retryPassword) {
-      this.setState((prevState: RegistrationState) => {
-        return({ ...prevState, error: true, errorMessage: "The entered passwords are not the same" } as RegistrationState);
+      this.setState((prevState: IRegistrationState) => {
+        return({ ...prevState, error: true, errorMessage: "The entered passwords are not the same" } as IRegistrationState);
       })
 
       return false;
@@ -104,10 +104,13 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
   };
 
   render() {
-    if(this.isLogin()) {
-      return(
-        <Redirect to={{ pathname: '/' }} />
-      );
+    const { loginStore, registrationStore, routerStore } = this.props;
+    const { errorMessage, name, email, password, retryPassword } = this.state;
+
+    if(loginStore.isLogin()) {
+      routerStore.replace('/');
+
+      return(<Redirect to={{ pathname: '/' }} />);
     }
 
     return(
@@ -119,7 +122,7 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
               <TextField
                 id="name-field"
                 label="Name"
-                value={this.state.name}
+                value={name}
                 onChange={this.handleChangeName}
               />
             </ListItem>
@@ -127,7 +130,7 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
               <TextField
                 id="email-field"
                 label="Email"
-                value={this.state.email}
+                value={email}
                 onChange={this.handleChangeEmail}
               />
             </ListItem>
@@ -136,7 +139,7 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
                 id="password-field"
                 label="Password"
                 type="password"
-                value={this.state.password}
+                value={password}
                 onChange={this.handleChangePassword}
               />
             </ListItem>
@@ -145,14 +148,14 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
                 id="retry-password-field"
                 label="Retype password"
                 type="password"
-                value={this.state.retryPassword}
+                value={retryPassword}
                 onChange={this.handleChangeRetryPassword}
               />
             </ListItem>
             <ListItem>
               <ErrorMessage
-                isOpen={this.props.registrationStore.error || this.state.errorMessage}
-                message={this.state.errorMessage || this.props.registrationStore.errorMessage}
+                isOpen={registrationStore.error || errorMessage}
+                message={registrationStore.errorMessage || errorMessage}
               />
             </ListItem>
             <ListItem>
@@ -167,7 +170,7 @@ class Registration extends Component<RegistrationProps, RegistrationState> {
             </ListItem>
           </List>
         </form>
-        <Loader isOpen={this.props.registrationStore.isLoading} />
+        <Loader isOpen={registrationStore.isLoading} />
       </Box>
     );
   }

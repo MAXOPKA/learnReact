@@ -3,7 +3,7 @@ import { getUsersEndpoint, userInfoEndpoint } from './Endpoints';
 import { responseHandler } from './Utils';
 
 class UsersAPIService {
-  getUserInfo = async () => {
+  static getUserInfo = async () => {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + loginStore.token);
@@ -12,7 +12,8 @@ class UsersAPIService {
     const response = await fetch(request);
     return responseHandler(response);
   }
-  getUsers = async (filter: string) => {
+  
+  static getUsers = async (filter: string) => {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + loginStore.token);

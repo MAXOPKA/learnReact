@@ -18,7 +18,7 @@ const registrationStore = types.model({
     },
     registration(name: string, email: string, password: string) {
       this.setIsLoading(true);
-      (new AccountAPIService()).registration(name, email, password)
+      AccountAPIService.registration(name, email, password)
       .then(
         (result) => {
           runInAction("registrationSuccess", () => {

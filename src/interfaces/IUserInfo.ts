@@ -1,8 +1,8 @@
-type UserInfoType = {
+interface IUserInfo {
   id: number;
   name: string;
   email: string;
   balance: number;
 }
 
-export default UserInfoType;
+export default IUserInfo;

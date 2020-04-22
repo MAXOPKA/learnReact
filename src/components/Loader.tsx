@@ -1,13 +1,18 @@
 import React from 'react';
+import CSS from 'csstype';
 import { CircularProgress, Backdrop } from '@material-ui/core';
 
-interface LoaderProps {
+interface ILoaderProps {
   isOpen: boolean;
 }
 
-export default (props: LoaderProps) => {
+const customModalRoot: CSS.Properties = {
+  zIndex: 2000,
+}
+
+export default (props: ILoaderProps) => {
   return(
-    <Backdrop open={props.isOpen} >
+    <Backdrop style={customModalRoot} open={props.isOpen} >
       <CircularProgress color="inherit" />
     </Backdrop>
   );

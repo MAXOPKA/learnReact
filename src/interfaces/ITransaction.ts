@@ -1,4 +1,4 @@
-type TransactionType = {
+interface ITransaction {
   id: number;
   date: string;
   username: string;
@@ -6,4 +6,4 @@ type TransactionType = {
   balance: number;
 }
 
-export default TransactionType;
+export default ITransaction;

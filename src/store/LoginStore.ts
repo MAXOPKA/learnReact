@@ -1,6 +1,7 @@
 import { runInAction } from "mobx";
 import { types } from "mobx-state-tree";
 import userInfoStore from "./UserInfoStore";
+import routerStore from "./RouterStore";
 import AccountAPIService from '../services/api/Account';
 
 const loginStore = types.model({
@@ -13,10 +14,16 @@ const loginStore = types.model({
       self.isLoading = isLoading;
     },
     setToken(token: string) {
-      console.log("set Token" + token);
+      window.localStorage.setItem('jwt', token);
+      if (token !== "" && self.token === "") {console.log('push');
+        routerStore.push("/");
+      }
+
+      if (token === "" && self.token !== "") {console.log('push');
+        routerStore.push("/login");
+      }
 
       self.token = token;
-      window.localStorage.setItem('jwt', token);
     },
     setError(error: boolean, errorMessage?: string) {
       self.error = error;
@@ -25,7 +32,7 @@ const loginStore = types.model({
     login(email: string, password: string) {
       this.setIsLoading(true);
 
-      (new AccountAPIService()).login(email, password)
+      AccountAPIService.login(email, password)
       .then(
         (result) => {
           runInAction("loginSuccess", () => {
@@ -42,6 +49,9 @@ const loginStore = types.model({
         }
       )
     },
-}))
+  }))
+  .views(self =>({
+    isLogin: () => self.token !== ""
+}));
 
 export default loginStore.create();

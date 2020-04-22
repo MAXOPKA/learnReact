@@ -1,27 +1,21 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { ListItem, ListItemText } from '@material-ui/core';
-import TransactionType from '../types/TransactionType'
+import ITransaction from '../interfaces/ITransaction'
 
-type TransactionsItemProps = {
-  transaction: TransactionType;
+interface ITransactionsItemProps {
+  transaction: ITransaction;
 }
 
-class TransactionsItem extends Component<TransactionsItemProps> {
-  render() {
-    return(
-      <ListItem>
-        <ListItemText>
-          {this.props.transaction.username}
-        </ListItemText>
-        <ListItemText>
-          {this.props.transaction.date}
-        </ListItemText>
-        <ListItemText>
-          {this.props.transaction.amount}
-        </ListItemText>
-      </ListItem>
-    );
-  }
-}
-
-export default TransactionsItem;
+export default (props: ITransactionsItemProps) => (
+  <ListItem>
+    <ListItemText>
+      {props.transaction.username}
+    </ListItemText>
+    <ListItemText>
+      {props.transaction.date}
+    </ListItemText>
+    <ListItemText>
+      {props.transaction.amount}
+    </ListItemText>
+  </ListItem>
+);

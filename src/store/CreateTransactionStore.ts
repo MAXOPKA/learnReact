@@ -22,7 +22,7 @@ const createTransactionStore = types.model({
     createTransaction(name: string, amount: number) {
       this.setIsLoading(true);
 
-      (new TransactionsAPIService()).createTransaction(name, amount)
+      TransactionsAPIService.createTransaction(name, amount)
       .then(
         (result) => {
           runInAction("createTransactionSuccess", () => {

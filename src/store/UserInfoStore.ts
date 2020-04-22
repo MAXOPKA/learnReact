@@ -1,7 +1,7 @@
 import { runInAction } from "mobx";
 import { types } from "mobx-state-tree";
 import UsersAPIService from "../services/api/Users";
-import UserInfoType from '../types/UserInfoType';
+import IUserInfo from '../interfaces/IUserInfo';
 
 export const userInfo = types.model("UserInfo", {
   id: types.number,
@@ -23,16 +23,16 @@ const userInfoStore = types.model({
       self.error = error;
       self.errorMessage = errorMessage;
     },
-    setUserInfo(user: UserInfoType) {
-      self.userInfo.id = user.id;
-      self.userInfo.name = user.name;
-      self.userInfo.email = user.email;
-      self.userInfo.balance = user.balance;
+    setUserInfo(userInfo: IUserInfo) {
+      self.userInfo.id = userInfo.id;
+      self.userInfo.name = userInfo.name;
+      self.userInfo.email = userInfo.email;
+      self.userInfo.balance = userInfo.balance;
     },
     getUserInfo() {
       this.setIsLoading(true);
 
-      (new UsersAPIService()).getUserInfo()
+      UsersAPIService.getUserInfo()
       .then(
         (result) => {
           runInAction("getUserInfoSuccess", () => {

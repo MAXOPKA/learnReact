@@ -1,12 +1,12 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 
-interface ErrorMessageProps {
+interface IErrorMessageProps {
   isOpen: boolean;
   message?: string;
 }
 
-export default (props: ErrorMessageProps) => {
+export default (props: IErrorMessageProps) => {
   if(!props.isOpen) {
     return null;
   }

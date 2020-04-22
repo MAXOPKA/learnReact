@@ -3,7 +3,7 @@ import { transactionsEndpoint } from './Endpoints';
 import { responseHandler } from './Utils';
 
 class TransactionsAPIService {
-  getTransactions = async () => {
+  static getTransactions = async () => {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + loginStore.token);
@@ -12,7 +12,8 @@ class TransactionsAPIService {
     const response = await fetch(request);
     return responseHandler(response);
   }
-  createTransaction = async (name: string, amount: number) => {
+  
+  static createTransaction = async (name: string, amount: number) => {
       const headers = new Headers();
       headers.append("Content-Type", "application/json");
       headers.append("Authorization", "Bearer " + loginStore.token)
